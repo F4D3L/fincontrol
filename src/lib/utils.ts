@@ -25,6 +25,13 @@ export function getCurrentMonth(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 }
 
+// Returns the actual last day of a YYYY-MM string (e.g. "2026-04" → "2026-04-30")
+export function getMonthEnd(ym: string): string {
+  const [y, m] = ym.split('-').map(Number)
+  const lastDay = new Date(y, m, 0).getDate() // day 0 of next month = last day of current month
+  return `${ym}-${String(lastDay).padStart(2, '0')}`
+}
+
 export function getDaysUntilDue(dueDay: number): number {
   const today = new Date()
   const currentDay = today.getDate()

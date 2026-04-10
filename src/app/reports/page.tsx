@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Header } from '@/components/layout/Header'
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card'
-import { formatCurrency, MONTHS_PT } from '@/lib/utils'
+import { formatCurrency, getMonthEnd, MONTHS_PT } from '@/lib/utils'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 
@@ -40,7 +40,7 @@ export default function ReportsPage() {
           .select('*, category:categories(*)')
           .eq('user_id', user.id)
           .gte('date', `${ym}-01`)
-          .lte('date', `${ym}-31`)
+          .lte('date', getMonthEnd(ym))
           .then(({ data: txData }) => {
             const income = (txData || []).filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0)
             const expense = (txData || []).filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0)

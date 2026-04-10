@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Header } from '@/components/layout/Header'
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card'
-import { formatCurrency, getCurrentMonth, MONTHS_PT, getBillStatus, getDaysUntilDue } from '@/lib/utils'
+import { formatCurrency, getCurrentMonth, getMonthEnd, MONTHS_PT, getBillStatus, getDaysUntilDue } from '@/lib/utils'
 import { TrendingUp, TrendingDown, Wallet, AlertCircle, ChevronRight } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import Link from 'next/link'
@@ -48,7 +48,7 @@ export default function DashboardPage() {
         .select('*, category:categories(*)')
         .eq('user_id', user.id)
         .gte('date', `${currentMonth}-01`)
-        .lte('date', `${currentMonth}-31`)
+        .lte('date', getMonthEnd(currentMonth))
         .order('date', { ascending: false }),
       supabase
         .from('fixed_bills')
@@ -72,7 +72,7 @@ export default function DashboardPage() {
             .select('amount, type')
             .eq('user_id', user.id)
             .gte('date', `${ym}-01`)
-            .lte('date', `${ym}-31`)
+            .lte('date', getMonthEnd(ym))
             .then(({ data: mTx }) => {
               const mIncome = (mTx || []).filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0)
               const mExpense = (mTx || []).filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0)

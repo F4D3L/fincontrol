@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Input, Select, Textarea } from '@/components/ui/Input'
-import { formatCurrency, getCurrentMonth, MONTHS_PT } from '@/lib/utils'
+import { formatCurrency, getCurrentMonth, getMonthEnd, MONTHS_PT } from '@/lib/utils'
 import { Plus, Pencil, Trash2, Tag, Settings } from 'lucide-react'
 import type { Transaction, Category } from '@/types'
 
@@ -33,7 +33,7 @@ export default function TransactionsPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setLoading(false); return }
 
-    const [ym_start, ym_end] = [`${filter.month}-01`, `${filter.month}-31`]
+    const [ym_start, ym_end] = [`${filter.month}-01`, getMonthEnd(filter.month)]
     let txQuery = supabase.from('transactions').select('*, category:categories(*)').eq('user_id', user.id).gte('date', ym_start).lte('date', ym_end).order('date', { ascending: false })
     if (filter.type !== 'all') txQuery = txQuery.eq('type', filter.type)
     if (filter.category !== 'all') txQuery = txQuery.eq('category_id', filter.category)
