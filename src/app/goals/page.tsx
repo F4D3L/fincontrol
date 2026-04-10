@@ -29,9 +29,8 @@ export default function GoalsPage() {
   useEffect(() => { load() }, [showCompleted])
 
   async function load() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) return
-    const user = session.user
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
     let query = supabase.from('goals').select('*').eq('user_id', user.id)
     if (!showCompleted) query = query.eq('is_completed', false)
     query = query.order('created_at', { ascending: false })
@@ -43,9 +42,8 @@ export default function GoalsPage() {
   async function saveGoal() {
     setSaving(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) return
-      const user = session.user
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
       const payload = {
         user_id: user.id, name: form.name, target_amount: parseFloat(form.target_amount),
         current_amount: parseFloat(form.current_amount) || 0, target_date: form.target_date || null,

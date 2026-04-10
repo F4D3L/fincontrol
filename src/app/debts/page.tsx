@@ -27,9 +27,8 @@ export default function DebtsPage() {
   useEffect(() => { load() }, [showPaid])
 
   async function load() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) return
-    const user = session.user
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
     let query = supabase.from('debts').select('*').eq('user_id', user.id)
     if (!showPaid) query = query.eq('is_paid', false)
     query = query.order('created_at', { ascending: false })
@@ -41,9 +40,8 @@ export default function DebtsPage() {
   async function saveDebt() {
     setSaving(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) return
-      const user = session.user
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
       const payload = {
         user_id: user.id,
         name: form.name,

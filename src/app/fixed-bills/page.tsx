@@ -26,9 +26,8 @@ export default function FixedBillsPage() {
   useEffect(() => { load() }, [])
 
   async function load() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) return
-    const user = session.user
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
 
     // Bills and categories are independent — fetch in parallel
     const [{ data: billsData }, { data: cats }] = await Promise.all([
@@ -70,9 +69,8 @@ export default function FixedBillsPage() {
   async function saveBill() {
     setSaving(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) return
-      const user = session.user
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
       const payload = { user_id: user.id, name: form.name, amount: parseFloat(form.amount), due_day: parseInt(form.due_day), is_auto_debit: form.is_auto_debit, category_id: form.category_id || null, notes: form.notes || null, is_active: form.is_active }
       if (editBill) {
         await supabase.from('fixed_bills').update(payload).eq('id', editBill.id)

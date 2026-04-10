@@ -25,9 +25,8 @@ export default function ReportsPage() {
   useEffect(() => { load() }, [])
 
   async function load() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) return
-    const user = session.user
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
 
     const now = new Date()
 

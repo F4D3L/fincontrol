@@ -30,9 +30,8 @@ export default function TransactionsPage() {
   useEffect(() => { load() }, [filter])
 
   async function load() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) return
-    const user = session.user
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
 
     const [ym_start, ym_end] = [`${filter.month}-01`, `${filter.month}-31`]
     let txQuery = supabase.from('transactions').select('*, category:categories(*)').eq('user_id', user.id).gte('date', ym_start).lte('date', ym_end).order('date', { ascending: false })
@@ -51,9 +50,8 @@ export default function TransactionsPage() {
   async function saveTx() {
     setSaving(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) return
-      const user = session.user
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
       const payload = { user_id: user.id, amount: parseFloat(form.amount), type: form.type, category_id: form.category_id || null, description: form.description, date: form.date, is_recurring: form.is_recurring }
       if (editTx) {
         await supabase.from('transactions').update(payload).eq('id', editTx.id)

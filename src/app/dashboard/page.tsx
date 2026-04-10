@@ -29,9 +29,9 @@ export default function DashboardPage() {
   }, [])
 
   async function loadDashboard() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) return
-    const user = session.user
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
+
 
     const now = new Date()
     const currentMonth = getCurrentMonth()
